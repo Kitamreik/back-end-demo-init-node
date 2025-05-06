@@ -15,12 +15,13 @@ const morgan = require("morgan");
 //NEW: add the path module
 const path = require("node:path");
 
+const helmet = require("helmet"); //make sure you have helmet from this classwork on
+
 app.use(cors());
 app.use(morgan("dev"));
 //combined - show a log that is more comprehensive
 //dev - show simpler information
 
-//--------- PER 2: CW: Dynamic Node Review ------------
 //Tell the app to use express to bundle all of the files within the public directory
 app.use(express.static(path.join(__dirname + "/public")));
 
@@ -30,75 +31,20 @@ app.use(express.json());
 //Tell the app to use express and urlencoded to scramble form information and set to true.
 app.use(express.urlencoded({extended: true}));
 
-//--------- PER 2: CW: Dynamic Node Review ------------
 //end Middleware
-//--------- PER 3: CW: Dynamic Pass Data -------------
-//Insert Site Data here:
-// Site Data 
-const username = 'CodeSquader';
-const date = new Date();
-const year = date.getFullYear();
-const isSignedIn = true;
 
-//Insert arrays
-// Array containing 3 objects, each object representing information about a specific book. This is a representation of information that would actually be stored in a database. Since we're not to databases yet, we'll use this array instead. 
-const books = [
-    {
-      _id: "001",
-      title: "Midnight for Charlie Bone",
-      author: "Jenny Nimmo",
-      price: 23,
-      starRating: 4,
-      synopsis:
-        "In the first novel, 10-year-old Charlie Bone discovers that he has a special power. After accidentally encountering a photograph of a missing baby, Charlie begins to hear the voices of people in photographs. He discovers that he is a descendant of the Red King, who was an ancient magician."
-    },
-    {
-      _id: "002",
-      title: "Akira",
-      author: "Katsuhiro Otomo",
-      price: 16,
-      starRating: 3,
-      synopsis:
-        "Akira, a dystopian saga set in Neo-Tokyo, a city recovering from thermonuclear attack where the streets have been ceded to motorcycle gangs and the rich and powerful run dangerous experiments on destructive, supernatural powers that they cannot control."
-    },
-    {
-      _id: "003",
-      title: "Matilda",
-      author: "Roald Dahl",
-      price: 15,
-      starRating: 5,
-      synopsis:
-        "A girl gifted with a keen intellect and psychic powers uses both to get even with her callous family and free her kindly schoolteacher from the tyrannical grip of a headmistress."
-    },
-    //make more books if you want...
-]
-  
-// Array containing 3 objects, each object representing information about an author. This is a representation of information that would actually be stored in a database. Since we're not to databases yet, we'll use this array instead. 
-const authors = [
-    {
-    _id: '001',
-    firstName:'Jenny', 
-    lastName: 'Nimmo',
-    birthYear: 1944, 
-    bio: "Jenny Nimmo is a British author of children's books, including fantasy and adventure novels, chapter books, and picture books."
-    },
-    {
-    _id: '002',
-    firstName:'Katsuhiro', 
-    lastName: 'Otomo',
-    birthYear: 1954, 
-    bio: 'Katsuhiro Otomo is a Japanese manga artist, screenwriter, animator and film director. He is best known as the creator of Akira, in terms of both the original 1982 manga series and the 1988 animated film adaptation.'
-    },
-    {
-    _id: '003',
-    firstName:'Roald', 
-    lastName: 'Dahl',
-    birthYear: 1916, 
-    bio: "Roald Dahl was a British author who penned 19 children's books over his decades-long writing career."
-    }
-]
+//Define the routing variable for authorsRoutes
+const booksRoutes = require('./routes/booksRouter');
+const authorsRoutes = require('./routes/authorsRouter');
 
-//--------- PER 3: CW: Dynamic Pass Data -------------
+//Test this route. Is it operational? If not, what can you do to make it work? What file are you getting the data from?
+
+//Answer: The route is not operational yet, we can define the siteData file and reference it in the data object.
+const siteData = require('./data/siteData');
+app.get("/", (request, response, next) => {
+  response.status(200).json({success: {message: "This route points to the Home page"}, data: siteData , statusCode: 200});
+});
+
 
 //initialize and retain an index route to automatically render a message when the server starts
 app.get("/", (req, res, next) => {
@@ -198,7 +144,9 @@ app.get("/books/:_id", (req, res, next) => {
     
 });
 
-//------ route parameters (BONUS) here -------
+//Tell the app to use the routing variables you defined earlier, booksRoutes and authorsRoutes
+app.use("/api/books", booksRoutes);
+app.use("/api/authors", authorsRoutes);
 
 //have the app listen at the PORT where a console.log says `Server is listening on ${PORT}. Connection established.`
 app.listen(PORT, () => { //http://localhost:3000
