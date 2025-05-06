@@ -80,69 +80,11 @@ app.get("/site-routes", (req, res, next) => {
     });
 });
 
-//-----AWESOME AUTHORS -------
-app.get("/authors", (req, res, next) => {
-    //res.send("This route points to the Author page");
-    res.status(200).json({
-            success: {message: "This route points to the Author page"},
-            statusCode: 200
-        });
-});
-app.get("/authors/create", (req, res, next) => {
-    res.status(200).json({
-        success: {message: "This route points to the Create Author page"},
-        statusCode: 200
-    });
-});
-app.get("/authors/:_id", (req, res, next) => {
-    res.status(200).json({
-        success: {message: "This route points to the specific author via the ID"},
-        statusCode: 200
-    });
-});
+//-----AWESOME AUTHORS -------> authorsRoutes.js
 
-//------ BOOK BESTIES ------
-app.get("/books", (req, res, next) => {
-    //res.send("This route points to the Books page");
-    res.status(200).json({
-            success: {message: "This route points to the Books page"},
-            //include the proper array of data that is needed to be passed in a key of data 
-            data: {
-                //and a value of an object that has the array as the parameter.
-                books: books
-            },
-            statusCode: 200
-        });
-});
-app.get("/books/create", (req, res, next) => {
-    res.status(200).json({
-        success: {message: "This route points to the Create Book page"},
-        statusCode: 200
-    });
-});
-app.get("/books/:_id", (req, res, next) => {
-    const params = request.params; //store the request.params object in a variable
-    console.log(params);
-    const {_id} = params; //Retrieve the _id from the parameters using object destructuring
-    //Create a new variable called foundBook and use the .find method on books array to find the book with the given _id.
-    const foundBook = books.find((book) => book._id === _id);
-    //Stage an if...else statement to detect if there is a book found. 
-    if (foundBook) { //If the book is found, log the key of data and a value of an object that has the foundBook as the parameter after the success message.
-        res.status(200).json({
-            success: {message: "This route points to the specific book via the ID"},
-            key: {
-                book: foundBook
-            },
-            statusCode: 200
-        });
-    } else { //Otherwise, send a 404 error with the message of "There is no book with this id", with the corresponding statusCode.
-        res.status(404).json({
-            error: {message: "There is no book with this id"},
-            statusCode: 404
-        })
-    }
-    
-});
+
+//------ BOOK BESTIES ------> bookRoutes.js
+
 
 //Tell the app to use the routing variables you defined earlier, booksRoutes and authorsRoutes
 app.use("/api/books", booksRoutes);
