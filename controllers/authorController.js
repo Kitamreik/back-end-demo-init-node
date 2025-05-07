@@ -63,8 +63,8 @@ const createAuthor = async (request, response, next) => {
 };
 
 const updateAuthor = async (request, response, next) => {
-  const { _id } = request.params;
-  const {firstName, lastName, birthYear, bio} = request.body; 
+  const { _id } = request.params; //004
+  const {firstName, lastName, birthYear, bio} = request.body; //capturing the stored info from inventory
 
   try {
     const updatedAuthor = {
@@ -89,7 +89,7 @@ const updateAuthor = async (request, response, next) => {
 };
 
 const deleteAuthor = async (request, response, next) => {
-  const { _id } = request.params;
+  const { _id } = request.params; //004
 
   try {
     const eraser = authors.filter((author) => author._id !== _id);

@@ -20,6 +20,17 @@ const authorInventory = [
     lastName: 'Dahl',
     birthYear: 1916, 
     bio: "Roald Dahl was a British author who penned 19 children's books over his decades-long writing career."
+    },
+    {
+        _id: '004',
+        firstName:'Kit', 
+        lastName: 'Fenrir',
+        birthYear: 1994, 
+        bio: 'Kit Fenrir, the Back End Beast, joined the TF team in 2022 after they graduated :]'
+    }
+    , {
+        _id: '005',
+        //......
     }
 ]
 

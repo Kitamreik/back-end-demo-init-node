@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { getAllBooks, getBook, createBook, updateBook, deleteBook } = require("../controllers/booksController");
+const { getAllBooks, getBook, createBook, updateBook, deleteBook } = require("../controllers/bookController");
 
 //formerly from app.js
 /*
@@ -48,7 +48,7 @@ app.get("/books/:_id", (req, res, next) => {
 });
 */
 
-//All routes start with "/api/books/"
+//All routes start with "/api/books/" --> //http://localhost:3000/api/books
 router.get("/", getAllBooks); //http://localhost:3000/api/books/
 
 router.get("/:_id", getBook); //http://localhost:3000/api/books/:_id

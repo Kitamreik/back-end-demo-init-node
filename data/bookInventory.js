@@ -28,6 +28,15 @@ const bookInventory = [
         "A girl gifted with a keen intellect and psychic powers uses both to get even with her callous family and free her kindly schoolteacher from the tyrannical grip of a headmistress."
     },
     //make more books if you want...
+    {
+      _id: "004",
+      title: "CodeSquad Cohort 2025: Fightin' the Back End",
+      author: "Everyone!",
+      price: 99,
+      starRating: 5,
+      synopsis:
+        "The power of teamwork, collaboration and community will take all of you to the end of the bootcamp. - Kit"
+    }
 ]
 
 module.exports = bookInventory;

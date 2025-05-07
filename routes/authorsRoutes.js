@@ -2,7 +2,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { getAllAuthors, getAuthor, createAuthor, updateAuthor, deleteAuthor } = require("../controllers/authorsController");
+const { getAllAuthors, getAuthor, createAuthor, updateAuthor, deleteAuthor } = require("../controllers/authorController");
 
 //formerly from app.js
 /*

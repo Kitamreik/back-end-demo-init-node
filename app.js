@@ -34,8 +34,8 @@ app.use(express.urlencoded({extended: true}));
 //end Middleware
 
 //Define the routing variable for authorsRoutes
-const booksRoutes = require('./routes/booksRouter');
-const authorsRoutes = require('./routes/authorsRouter');
+const booksRoutes = require('./routes/bookRoutes');
+const authorsRoutes = require('./routes/authorsRoutes');
 
 //Test this route. Is it operational? If not, what can you do to make it work? What file are you getting the data from?
 
@@ -47,6 +47,7 @@ app.get("/", (request, response, next) => {
 
 
 //initialize and retain an index route to automatically render a message when the server starts
+/*
 app.get("/", (req, res, next) => {
     res.status(200).json({
         success: {message: "Hello CodeSquad Cohort 2025, you rock and I am so proud of all of you for following along with me!"},
@@ -59,19 +60,22 @@ app.get("/", (req, res, next) => {
         statusCode: 200
     });
 }); //i want to see something when the server starts
+*/
 
+//http://localhost:3000/admin
 app.get("/admin", (req, res, next) => {
     //res.send("This route points to the Admin Console page");
     res.status(200).json({
         success: {message: "This route points to the Admin Console page"},
         //key of data and a value of an object that has isSignedIn as the parameter.
         data: {
-            isSignedIn: isSignedIn
+            isSignedIn: true
         },
         statusCode: 200
     });
 });
 
+//http://localhost:3000/site-routes
 app.get("/site-routes", (req, res, next) => {
     // res.send("This route points to the site router page");
     res.status(200).json({
@@ -85,10 +89,12 @@ app.get("/site-routes", (req, res, next) => {
 
 //------ BOOK BESTIES ------> bookRoutes.js
 
+//http://localhost:3000 --> index
+
 
 //Tell the app to use the routing variables you defined earlier, booksRoutes and authorsRoutes
-app.use("/api/books", booksRoutes);
-app.use("/api/authors", authorsRoutes);
+app.use("/api/books", booksRoutes); //http://localhost:3000/api/books
+app.use("/api/authors", authorsRoutes); //http://localhost:3000/api/authors
 
 //have the app listen at the PORT where a console.log says `Server is listening on ${PORT}. Connection established.`
 app.listen(PORT, () => { //http://localhost:3000
