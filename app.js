@@ -26,7 +26,6 @@ app.get("/", (request, response, next) => {
   response.status(200).json({success: {message: "This route points to the Home page"}, data: siteData , statusCode: 200});
 });
 
-
 //Tell the app to use the routing variables you defined earlier
 app.use("/api/books", booksRoutes);
 app.use("/api/authors", authorsRoutes);
