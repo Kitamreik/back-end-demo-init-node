@@ -4,29 +4,6 @@ const router = express.Router();
 
 const { getAllAuthors, getAuthor, createAuthor, updateAuthor, deleteAuthor } = require("../controllers/authorController");
 
-//formerly from app.js
-/*
-app.get("/authors", (req, res, next) => {
-    //res.send("This route points to the Author page");
-    res.status(200).json({
-            success: {message: "This route points to the Author page"},
-            statusCode: 200
-        });
-});
-app.get("/authors/create", (req, res, next) => {
-    res.status(200).json({
-        success: {message: "This route points to the Create Author page"},
-        statusCode: 200
-    });
-});
-app.get("/authors/:_id", (req, res, next) => {
-    res.status(200).json({
-        success: {message: "This route points to the specific author via the ID"},
-        statusCode: 200
-    });
-});
-*/
-
 //All routes start with "/api/authors/"
 router.get("/", getAllAuthors); //http://localhost:3000/api/authors/
 
