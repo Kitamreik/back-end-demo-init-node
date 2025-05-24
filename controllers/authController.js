@@ -1,19 +1,21 @@
-const userRoster = require("../data/userRoster");
+//const userRoster = require("../data/userRoster");
+
+//NEW: Define the User Model
+const User = require("../models/userModel");
 
 const register = async (request, response, next) => {
   const { firstName, lastName, username, password } = request.body;
   console.log(request.body);
   //Error handling can be reactivated in the auth unit.
-  /*
-        if (error) {
-            return next(error);
-        } else if (!firstName || !username || !password) { // Confirm required fields are not empty before any other work
-        return response.status(400).json({
+
+    if (error) {
+        return next(error);
+    } else if (!firstName || !username || !password) { // Confirm required fields are not empty before any other work
+      return response.status(400).json({
         error: { message: "Missing required fields." },
         statusCode: 400,
-        });
-        }
-*/
+      });
+    }
 
   try {
     //Make some "salty hash browns" here in Authentication.
@@ -31,14 +33,14 @@ const register = async (request, response, next) => {
       "Registration successful outside of local authentication feature."
     );
 
-    for (const user of userRoster) {
-        console.log(user, "User Roster")
-    }
-    //OR
-    console.log(userRoster[0], "Logging webmaster");
-    console.log(userRoster[1], "Logging administrator");
+    // for (const user of userRoster) {
+    //     console.log(user, "User Roster")
+    // }
+    // //OR
+    // console.log(userRoster[0], "Logging webmaster");
+    // console.log(userRoster[1], "Logging administrator");
 
-    userRoster.push(newUser);
+    newUser.save(); //formerly userRoster.push(newUser)
 
     //call the mockPassport function to check login but not needed for now.
 
@@ -65,15 +67,21 @@ const login = async (request, response, next) => {
 };
 
 const localLogin = async (request, response, next) => {
+  //Comment out the following:
   //create a simpler iterator that stores the userRoster
-  const user = userRoster;
-  console.log(user, "before");
+  // const user = userRoster;
+  // console.log(user, "before");
 
-  userCopy = user; //Value Transfer
+  // userCopy = user; //Value Transfer
 
-  console.log(userCopy, "copy of user");
+  // console.log(userCopy, "copy of user");
 
-  let result = true;
+  // let result = true;
+
+  //5.1 Per 4 Code Start:
+  // We will make a copy of the user, then change the password of the copy. MongoDB by default will not send any undefined values in the response.
+  const userCopy = { ...req.user._doc };
+  userCopy.password = undefined;
 
   //Kit: In the authentication unit, we'll use a special middleware called Passport to authenticate local checks. For now, this function emulates that functionality.
   function mockPassport(err, user) {
@@ -84,13 +92,12 @@ const localLogin = async (request, response, next) => {
 
     //if there is not a user detected
     //Error handling can be reactivated in the auth unit.
-    /*
         if (!user) {
             return response.status(401).json({
                 error: { message: "There is not a user detected. Please try again." },
             });
         }
-    */
+
 
     //This code snippet can reactivated in the auth unit.
     /*

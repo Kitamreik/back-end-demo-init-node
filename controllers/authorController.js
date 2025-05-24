@@ -1,5 +1,12 @@
 const siteData = require('../data/siteData')
-const authorInventory = require('../data/authorInventory');
+//const authorInventory = require('../data/authorInventory');
+
+//require the Author's model
+const Author = require("../models/authorModel");
+
+//New: Let's emulate an author model together.
+
+const authorSample = async (request, response, next) => {}
 
 const getAllAuthors = async (request, response, next) => { 
   //create a simpler iterator that stores the authorInventory
