@@ -1,35 +1,55 @@
-require("dotenv").config();//summon the dotenv library
-require("./config/connection")//use the connection to the database
-require("./config/authStrategy")//use the authentication strategies from different applications for single sign on (SSO)
-//--- NEW: DATABASE CONNECTION CODE MUST BE ABOVE THIS LINE ---
+require("dotenv").config();
+require("./config/connection");
+require("./config/authStrategy");
+
 const express = require("express");
 const morgan = require("morgan");
 const path = require("node:path");
-const helmet = require("helmet"); //make sure you have helmet from this classwork on
+const helmet = require("helmet"); 
 const cors = require("cors");
-
-//---PER 3 DATA STORAGE---
-//Summon mongoose after you installed it
 const mongoose = require("mongoose");
 
+//Make a comment that says session and passport here - AUTH PER 1
+const session = require("express-session");
+const passport = require("passport");
+
 const app = express();
-//const PORT = 3000; //NEW: refactor to use the environmental variable method
 const PORT = process.env.PORT || 3000;
-
-
-app.use(helmet()); //make sure you have helmet from this classwork on
-
-app.use(morgan("dev"));
-app.use(cors({credentials: true, origin: true})); //NEW: allow cors' credentials and origin to be defined as true within an object as the parameter
 
 //Define the routing variable for authRoutes
 const booksRoutes = require('./routes/bookRoutes');
 const authorsRoutes = require('./routes/authorsRoutes');
 const authRoutes = require('./routes/authRouter');
 
+app.use(helmet()); 
+app.use(morgan("dev"));
+app.use(cors({credentials: true, origin: true})); 
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname + "/public")));
+
+//------ PER 2: SESSION MANAGEMENT --------
+app.use(
+  session({
+    resave: false,
+    saveUninitialized: false, // saveUninitialized is false because we do not want to create a session in every call
+    secret: process.env.SECRET_KEY,
+
+    // We include cookie in our sessions
+    cookie: {
+      httpOnly: true, // httpOnly true because of security
+      secure: false, // secure is false in development, true in production
+      maxAge: 1000 * 60 * 60 * 24, //this is the length the session should last, aka 24 hours or one day.
+    },
+  })
+);
+
+//----- PER 2:  PASSPORT INITIALIZATION ------
+app.use(passport.initialize());
+// passport.session below will take care of creating a session on calls that require passport authentication
+app.use(passport.session());
+
 
 const siteData = require('./data/siteData');
 app.get("/", (request, response, next) => {
@@ -39,43 +59,36 @@ app.get("/", (request, response, next) => {
 //Tell the app to use the routing variables you defined earlier
 app.use("/api/books", booksRoutes);
 app.use("/api/authors", authorsRoutes);
-app.use("/api", authRoutes);
+app.use("/auth", authRoutes); //PER 1 NEW: CHANGE TO "/auth", formerly "/api"
 
-//--- NEW: ERR HANDLING CODE MUST BE BELOW THIS LINE ---
-//NEW: error handling middle ware --> "Catch-all"
+//--- PER 1 UPGRADE: ERR HANDLING CODE  ---
 app.use((error, request, response, next) => {
     //Our condition should be if MongoDB detects the error code 11000, we need to flag the user as a duplicate
     let condition = error.code === 11000
 
-    //console.log the condition
-    console.log(condition)
+    //PER 1: Refactor status handling with variables 
+    const authErrStatus = error.status || 400;
+    const serverErrStatus = error.status || 500;
 
-    //stage an if-else statement
     if (condition) {
-        //return the status as the error's status or default to a 400. 
-      return response.status(error.status || 400).json({
+        //Refactor status handling with variables 
+      return response.status(authErrStatus).json({
         error: {message: "Error detected!!!"},
-        statusCode: error.status || 400,
-        //log the error message
+        statusCode: authErrStatus,
         })
-        
-        //confirm status codes
     } else {
         //console.log that account check passed
         console.log("We passed the error handling middleware, you're good to go")
     }
 
     //Any other errors are caught
-    //Return the status as the error's status or default to a 500 to reflect on the server side. 
-    return response.status(error.status || 500).json({
+    //Refactor status handling with variables 
+    return response.status(serverErrStatus).json({
       error: {message: error.message || "Internal server error, oh no!"},
-      statusCode: error.status || 500
+      statusCode: serverErrStatus
     })
-    //log the error message
-
-    //confirm status codes
 })
-//----------
+//-----SERVER SHOULD NOT BE MODIFIED UNLESS ACTIVATING ANALYTICS-----
 app.listen(PORT, () => {
   console.log(`Carol's bookstore server is listening on port ${PORT}`);
   console.log(`http://localhost:${PORT}/`)

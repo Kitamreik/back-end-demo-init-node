@@ -1,13 +1,15 @@
-//const userRoster = require("../data/userRoster");
+//NEW: Define passport and bcrypt for auth
+const passport = require("passport");
+const bcrypt = require("bcrypt");
 
-//NEW: Define the User Model
+//Define the User Model
 const User = require("../models/userModel");
 
+//REVIEW/NEW MATERIAL - //PER 2
 const register = async (request, response, next) => {
   const { firstName, lastName, username, password } = request.body;
   console.log(request.body);
-  //Error handling can be reactivated in the auth unit.
-
+  //Error handling 
     if (error) {
         return next(error);
     } else if (!firstName || !username || !password) { // Confirm required fields are not empty before any other work
@@ -19,30 +21,31 @@ const register = async (request, response, next) => {
 
   try {
     //Make some "salty hash browns" here in Authentication.
+    const hashedPassword = await bcrypt.hash(password, 10); //(myPlaintextPassword, saltRounds);
+    //Technique (auto-gen a salt and hash): store the hashedPassword and tell bcrypt to await hashing, where we will convert the password using 10 rounds of salt.  
+    // Store hash in your password DB.
 
     const newUser = {
       firstName: firstName,
       lastName: lastName,
       username: username,
-      password: password, //upgrade password later
-      //more advanced auth...
+      password: hashedPassword, //upgrade password to hashedPassword
+      //more advanced auth... target the Google and/or GitHub IDs for user auth
+      googleId: googleId,
+      githubId: githubId //Again, this is optional
+
     };
 
-    //Send a simple log to confirm that code is operational
-    console.log(
-      "Registration successful outside of local authentication feature."
-    );
+    //NEW: Await the newUser's information to be registered in the database and save the model of the user within MongoDB (simply add the await keyword)
+    await newUser.save();
 
-    // for (const user of userRoster) {
-    //     console.log(user, "User Roster")
-    // }
-    // //OR
-    // console.log(userRoster[0], "Logging webmaster");
-    // console.log(userRoster[1], "Logging administrator");
-
-    newUser.save(); //formerly userRoster.push(newUser)
-
-    //call the mockPassport function to check login but not needed for now.
+    //NEW: Call the mockPassport function to check login. Move the code inside of the object within the skeleton
+    request.login(newUser, (error) => {
+      //Stage an if statement to catch errors
+      if (error) {
+        return next(error);
+      }
+    })
 
     // Yusuf: AFTER user is saved AND logged in, we can change the password to undefined. Luckily, our database, MongoDB, by default will not send any undefined values in the response.
     newUser.password = undefined;
@@ -53,38 +56,28 @@ const register = async (request, response, next) => {
       statusCode: 201,
     });
   } catch (error) {
-    return response.status(500).json({
-      error: { message: "Internal server error" },
-      statusCode: 500,
-    });
+    //NOW:  //Refactor error handling to simply return the next error 
+    return next(error)
+    //BEFORE: OK, but excessive
+    // return response.status(500).json({
+    //   error: { message: "Internal server error" },
+    //   statusCode: 500,
+    // });
   }
 };
 
+//NO TOUCHY FROM NOW ON
 const login = async (request, response, next) => {
   response.status(200).json({
     success: { message: "User logged in." },
   });
 };
 
+//REVIEW/NEW MATERIAL  - //PER 2
 const localLogin = async (request, response, next) => {
-  //Comment out the following:
-  //create a simpler iterator that stores the userRoster
-  // const user = userRoster;
-  // console.log(user, "before");
 
-  // userCopy = user; //Value Transfer
-
-  // console.log(userCopy, "copy of user");
-
-  // let result = true;
-
-  //5.1 Per 4 Code Start:
-  // We will make a copy of the user, then change the password of the copy. MongoDB by default will not send any undefined values in the response.
-  const userCopy = { ...req.user._doc };
-  userCopy.password = undefined;
-
-  //Kit: In the authentication unit, we'll use a special middleware called Passport to authenticate local checks. For now, this function emulates that functionality.
-  function mockPassport(err, user) {
+   //NEW: remame mockPassport to use the passport.authenticate method
+  passport.authenticate("local", (err, user, info) => { //we'll target the "local" strategy, errors, user and information
     //error handling as a final check and a failsafe
     if (err) {
       return next(err);
@@ -98,9 +91,6 @@ const localLogin = async (request, response, next) => {
             });
         }
 
-
-    //This code snippet can reactivated in the auth unit.
-    /*
         //use the login method to confirm the user
         request.login(user, (err) => {
             
@@ -108,9 +98,10 @@ const localLogin = async (request, response, next) => {
             if (err) {
                 return next(err)
             }
-            //We'll create a copy of the user by destructuring the request of the user's id and set the user's copied password to undefined for security.
-           
-
+            //5.1 Per 4 Code //We'll create a copy of the user by destructuring the request of the user's id and set the user's copied password to undefined for security.
+            const userCopy = { ...req.user._doc };
+            userCopy.password = undefined;
+            console.log(userCopy)
             //Log the user copied data.
             
 
@@ -120,66 +111,41 @@ const localLogin = async (request, response, next) => {
                 //Reference the user copied data with a key of data and a value as an object with a secondary key of user and the secondary value being the userCopy.
             });
         })
-        */
-  }
-  //call the mockPassport feature
-  mockPassport();
 
-  //Yusuf: Send the response in the login function. (Simple Version)
-  response.status(200).json({
-    success: { message: "Login successful." },
-    data: { user: userCopy },
-    result: result,
-  });
+  }) //add an ending parenthesis here
+
+
+  //Kit: You can disable this code, since it's handled by passport
+  // response.status(200).json({
+  //   success: { message: "Login successful." },
+  //   data: { user: userCopy },
+  //   result: result,
+  // });
 };
 
+//REVIEW/NEW MATERIAL  - //PER 2
 const logout = async (request, response, next) => {
-  console.log("Initializing logout controller logic...");
+  
+   //Kit: use the logout method to logout the user, destroy the session, clean up cookies from the browser and then return a response after cleaning up. This helps protect sessions, especially if as a developer, you walk away from your project, and you don't want anyone else accessing sensitive information after you.
 
-  // destroy the session on logout so unauthorized calls will be blocked
-  console.log("Session destroyed");
-  response.clearCookie("connect.sid");
-  //console.log(response, "Res after clear cookies") //Kit: you can visualize the response object and the information generated. It is a lot of information, so don't have this log in production.
+    request.logout((err) => {
+        if (err) {
+          return next(err);
+        }
 
-  //We won't use the return keyword here because we want the remainder of the code to run after confirmation.
-  response.status(200).json({
-    success: { message: "User logged out!" },
-    statusCode: 200, //return the status code
-  });
-
-  //Kit: In the authentication unit, we'll use a special middleware called Passport to authenticate local checks. For now, this function emulates that functionality.
-  function sessionDestruction(err) {
-    //error handling as a final check and a failsafe
-    if (err) {
-      return next(err);
-    }
-
-    //Kit: use the logout method to logout the user, destroy the session, clean up cookies from the browser and then return a response after cleaning up. This helps protect sessions, especially if as a developer, you walk away from your project, and you don't want anyone else accessing sensitive information after you.
-
-    //This code snippet can reactivated in the auth unit.
-    /*
-        request.logout((err) => {
+        // destroy the session on logout so unauthorized calls will be blocked
+        request.session.destroy((err) => {
             if (err) {
-              return next(err);
+                return next(err);
             }
-
-            // destroy the session on logout so unauthorized calls will be blocked
-            request.session.destroy((err) => {
-                if (err) {
-                    return next(err);
-                }
-            })
-            // Clear the cookie from the browser
-            response.clearCookie("connect.sid");
-            return response.status(200).json({
-                success: { message: "User logged out!" },
-                statusCode: 200, //return the status code
-            });
         })
-        */
-  }
-  sessionDestruction();
-  console.log("Logout function activated. Logging out...");
-};
+        // Clear the cookie from the browser
+        response.clearCookie("connect.sid");
+        return response.status(200).json({
+            success: { message: "User logged out!" },
+            statusCode: 200, //return the status code
+        });
+    })
+}
 
 module.exports = { register, login, logout, localLogin };

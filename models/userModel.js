@@ -1,3 +1,4 @@
+//NO TOUCHY FROM NOW ON
 const mongoose = require("mongoose");
 
 const { Schema } = mongoose;
@@ -25,13 +26,15 @@ const userSchema = new Schema({
         required: true,
         minLength: 8,
       },
+      //ONLY ADDITIONS TO MODEL
       googleId: {
         type: String,
       },
+      //Kit: GitHub Auth is optional
       githubId: {
         type: String,
       },
-    
+    //ONLY ADDITIONS TO MODEL
 })
 
 const User = mongoose.model("User", userSchema);
