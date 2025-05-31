@@ -2,7 +2,7 @@ const passport = require("passport");
 const bcrypt = require("bcrypt");
 const LocalStrategy = require("passport-local").Strategy;
 //Define Google (MANDATORY) and GitHub (OPTIONAL) Strategies - PER 3
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const GoogleStrategy = require("passport-google-oauth20").Strategy; //npm i passport-google-oauth20
 
 //Summon the User Model
 const User = require("../models/userModel");
@@ -53,7 +53,7 @@ passport.use(
 )
 
 //PER 3 Google Strategy - ACTIVATE AFTER GOOGLE OAUTH SETUP
-/*
+
 passport.use(
   new GoogleStrategy(
     {
@@ -84,7 +84,7 @@ passport.use(
     }
   )
 );
-*/
+
 
 
 //implement the github strategy - OPTIONAL

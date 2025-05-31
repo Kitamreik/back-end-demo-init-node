@@ -7,7 +7,7 @@ const morgan = require("morgan");
 const path = require("node:path");
 const helmet = require("helmet"); 
 const cors = require("cors");
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
 
 //Make a comment that says session and passport here - AUTH PER 1
 const session = require("express-session");
@@ -87,6 +87,7 @@ app.use((error, request, response, next) => {
       error: {message: error.message || "Internal server error, oh no!"},
       statusCode: serverErrStatus
     })
+    //UNREACHABLE
 })
 //-----SERVER SHOULD NOT BE MODIFIED UNLESS ACTIVATING ANALYTICS-----
 app.listen(PORT, () => {

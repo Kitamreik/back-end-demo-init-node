@@ -109,6 +109,7 @@ const localLogin = async (request, response, next) => {
             response.status(200).json({
                 success: { message: "Login successful within local authentication feature." },
                 //Reference the user copied data with a key of data and a value as an object with a secondary key of user and the secondary value being the userCopy.
+                data: {user:userCopy}
             });
         })
 

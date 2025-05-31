@@ -7,9 +7,12 @@ const router = express.Router();
 const { register, login, logout, localLogin } = require("../controllers/authController");
 
 //All routes in this file start with "/api" //new: CHANGE TO "/auth" to reflect app.js change
+router.get("/", (request, response, next) => {
+    return response.json("auth routing initialized")
+}) //http://localhost:3000/auth
 
 //FUNDAMENTAL ROUTES - NO TOUCHY FROM NOW ON - FAILSAFE
-router.post("/register", register);
+router.post("/register", register); //http://localhost:3000/auth/register
 
 router.get("/login", login);
 
@@ -22,7 +25,7 @@ router.get("/login/local", localLogin);
 router.get("/logout", logout);
 
 //STAGE GOOGLE AUTH - PER 3
-router.get("/login/google",
+router.get("/login/google", //http://localhost:3000/auth/login/google
     passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
