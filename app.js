@@ -7,7 +7,6 @@ const morgan = require("morgan");
 const path = require("node:path");
 const helmet = require("helmet"); 
 const cors = require("cors");
-// const mongoose = require("mongoose");
 
 //Make a comment that says session and passport here - AUTH PER 1
 const session = require("express-session");
